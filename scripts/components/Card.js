@@ -1,8 +1,17 @@
-import { Mesh, MeshBasicMaterial, PlaneGeometry, Vector2 } from "three";
+import {
+  Mesh,
+  MeshBasicMaterial,
+  PlaneGeometry,
+  Vector2,
+  Vector3,
+} from "three";
 import { ExtendedObject3D } from "../utils/ExtendedObject3D";
 import * as THREE from "three";
+import { Grid } from "./Grid.js";
+import { MainThree } from "../MainThree.js";
 
 export class Card extends ExtendedObject3D {
+  static #_DefaultScale = new Vector3();
   static Geometry = new PlaneGeometry(1, 1);
 
   gridPosition = new Vector2();
@@ -24,10 +33,22 @@ export class Card extends ExtendedObject3D {
       new MeshBasicMaterial({ color: new THREE.Color(`rgb(${r}, ${g}, ${b})`) })
     );
 
+    this.mesh.scale.copy(Card.#_DefaultScale);
+
     this.add(this.mesh);
   }
 
-  resize(event) {}
+  static SetScale() {
+    const aspect = window.innerWidth / window.innerHeight;
+    const viewWidth = MainThree.Camera.right - MainThree.Camera.left;
+    const columnWidth = viewWidth / Grid.COLUMNS;
+    this.#_DefaultScale.x = columnWidth;
+    this.#_DefaultScale.y = columnWidth / aspect;
+  }
+
+  resize(event) {
+    this.mesh.scale.copy(Card.#_DefaultScale);
+  }
 
   update(dt) {}
 }
